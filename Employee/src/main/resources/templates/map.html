@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Employee</title>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+<script th:inline="javascript">
+var map;
+function initMap() {
+	var myLatLng = new google.maps.LatLng(
+			parseFloat( /*[[${position.latitude}]]*/), parseFloat([[${position.longitude}]]));
+
+	map = new google.maps.Map(document.getElementById('map'), {
+		center : myLatLng,
+		zoom : 16
+	});
+
+	var marker = new google.maps.Marker({
+		map : map,
+		position : myLatLng,
+		title : 'Hello World!'
+	});
+}
+	</script>
+	<script async="async" defer="defer" th:src="@{https://maps.googleapis.com/maps/api/js(key=AIzaSyBwQyb-ZC4YeM5lamUpf1AsvbpA6uuo1eo,callback=initMap)}"></script>
+</head>
+<body>
+	<section class="container">
+			<div style="height: 600px" id="map"></div>
+	</section>
+</body>
+</html>
