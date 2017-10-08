@@ -12,6 +12,9 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.programmers.apply.entities.Employee;
+import com.programmers.apply.entities.EmployeeLocationTO;
+import com.programmers.apply.entities.Position;
+import com.programmers.apply.service.EmployeeLocationTOService;
 import com.programmers.apply.service.EmployeeService;
 import com.programmers.apply.service.PositionService;
 
@@ -22,12 +25,15 @@ public class EmployeeController {
 	private EmployeeService employeeService;
 
 	@Autowired
+	private EmployeeLocationTOService employeLocationTOService;
+
+	@Autowired
 	private PositionService positionService;
 
 	/**
 	 * 
-	 * ***MAIN PAGE***
-	 * Method to fill list view in first page
+	 * ***MAIN PAGE*** Method to fill list view in first page
+	 * 
 	 * @return to index view (list of employees)
 	 */
 	@RequestMapping(value = "/employees", method = RequestMethod.GET)
@@ -38,8 +44,10 @@ public class EmployeeController {
 	}
 
 	/**
-	 * Method that tries to insert a new employee, it tries to find the longitude and latitude from the given address
-	 * If it doesn't find it does not saved and give a response in the URL that the employee has not saved
+	 * Method that tries to insert a new employee, it tries to find the
+	 * longitude and latitude from the given address If it doesn't find it does
+	 * not saved and give a response in the URL that the employee has not saved
+	 * 
 	 * @param employee
 	 * @param binding
 	 * @param redirectAttributes
@@ -49,8 +57,9 @@ public class EmployeeController {
 	public ModelAndView insertOperator(@Valid @ModelAttribute Employee employee, BindingResult binding,
 			RedirectAttributes redirectAttributes) {
 		ModelAndView modelAndView = new ModelAndView("redirect:employees");
-		if (!binding.hasErrors() && positionService.getLongitudeLatitudeByAdress(employee.getAddress()) != null) {
-			employeeService.save(employee);
+		Position position = positionService.getLongitudeLatitudeByAdress(employee.getAddress());
+		if (!binding.hasErrors() && position != null) {
+			employeLocationTOService.save(new EmployeeLocationTO(employee, position));
 			modelAndView.addObject("hasSaved", true);
 		} else {
 			modelAndView.addObject("hasSaved", false);
@@ -59,15 +68,23 @@ public class EmployeeController {
 	}
 
 	/**
-	 * This method redirect to the Google Maps API page with the address location saved by the address 
+	 * This method redirect to the Google Maps API page with the address
+	 * location saved by the address
+	 * 
 	 * @param employee
 	 * @return to Map view
 	 */
 	@RequestMapping("/showMe")
 	public ModelAndView findMe(@ModelAttribute Employee employee) {
-		ModelAndView modelAndView = new ModelAndView("/map");
-		modelAndView.addObject("position", positionService
-				.getLongitudeLatitudeByAdress(employeeService.getEmployeeByName(employee.getName()).getAddress()));
-		return modelAndView;
+		Employee employeeByName = employeeService.getEmployeeByName(employee.getName());
+		if (employeeByName != null) {
+			Position position = employeeByName.getPosition();
+			ModelAndView modelAndView = new ModelAndView("/map");
+			modelAndView.addObject("position", position);
+			return modelAndView;
+		} else {
+			System.out.println("Not found this employee");
+			return null;
+		}
 	}
 }

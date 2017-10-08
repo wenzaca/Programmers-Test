@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -33,6 +34,9 @@ public class Employee {
     
     @Column(name="employee_address", nullable=false)
     private String address;
+    
+    @OneToOne
+    private Position Position;
     
 	public Long getId() {
 		return id;
@@ -64,6 +68,14 @@ public class Employee {
 
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	public Position getPosition() {
+		return Position;
+	}
+
+	public void setPosition(Position position) {
+		Position = position;
 	}
 
 	@Override

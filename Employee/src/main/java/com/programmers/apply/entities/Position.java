@@ -10,6 +10,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "position")
 public class Position {
+	public Position(){}
 
 	public Position(String latitude, String longitude) {
 		super();
